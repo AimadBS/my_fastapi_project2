@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API with JS</title>
+    <script>
+        // Fonction pour afficher les items
+        async function fetchItems() {
+            const response = await fetch("http://127.0.0.1:8000/items");
+            const data = await response.json();
+            const list = document.getElementById("item-list");
+            list.innerHTML = ""; // Clear existing content
+            data.forEach(item => {
+                const listItem = document.createElement("li");
+                listItem.textContent = `${item.message}`;
+                list.appendChild(listItem);
+            });
+        }
+
+        // Fonction pour ajouter un item
+        async function addItem() {
+            const message = document.getElementById("item-input").value;
+            const response = await fetch("http://127.0.0.1:8000/items", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ message })
+            });
+            if (response.ok) {
+                fetchItems(); // Refresh the list
+            }
+        }
+        async function addItem() {
+            const message = document.getElementById("item-input").value;
+            try {
+                const response = await fetch("http://127.0.0.1:8000/items", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ message })
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("Erreur :", errorData);
+                    alert("Failed to add item: " + errorData.detail);
+                } else {
+                    fetchItems(); // Refresh the list
+                }
+            } catch (error) {
+                console.error("Erreur réseau :", error);
+            }
+        }
+
+    </script>
+</head>
+<body>
+    <h1>Items List</h1>
+    <ul id="item-list"></ul>
+    <input id="item-input" type="text" placeholder="Add a message">
+    <button onclick="addItem()">Add Item</button>
+    <script>
+        fetchItems(); // Load items on page load
+    </script>
+</body>
+</html>
